@@ -71,7 +71,14 @@ async function fetchAndConcatenateContent() {
 }
 
 
-// Start the process
-fetchAndConcatenateContent().catch(error => {
+async function checkForChanges() {
+    await fetchAndConcatenateContent();
+
+    // Schedule the next check after 24 hours
+    setTimeout(checkForChanges, 86400000); // 24 hours in milliseconds
+}
+
+// Start the initial check
+checkForChanges().catch(error => {
     console.error('Error:', error);
 });
