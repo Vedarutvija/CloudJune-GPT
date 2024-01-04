@@ -31,10 +31,12 @@ def predict():
     new_message = {"role": "assistant", "content": ""}
     for chunk in completion:
         if chunk.choices[0].delta.content:
+            print(chunk.choices[0].delta.content, end="", flush=True)
             new_message["content"] += chunk.choices[0].delta.content
 
     history.append(new_message)
     return jsonify({"answer": new_message["content"]})
 
+
 if __name__ == "__main__":
-    app.run(debug=True)  # Set debug=True for development
+    app.run(host="0.0.0.0", port=5000, debug=True)
