@@ -1,11 +1,33 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs').promises;
+const mysql = require('mysql2');
 
 const mainUrl = 'https://cloudjune.com';
 const outputFilePath = './out.txt';
 
+
+// MySQL Database Configuration
+const dbConfig = {
+    host: 'localhost',
+    user: 'root',
+    password: 'Mysql@27#',
+    database: 'cloudjune'
+};
+
+const connection = mysql.createConnection(dbConfig);
 let allContent = '';
-let visitedLinks = new Set(); // Set to store visited links
+let visitedLinks = new Set();
+
+async function insertIntoDatabase(content) {
+    const query = 'INSERT INTO cloudjune.webcontent (content) VALUES (?)';
+    connection.query(query, [content], (error, results) => {
+        if (error) {
+            console.error('Error inserting into database:', error);
+        } else {
+            console.log('Content inserted into database with ID:', results.insertId);
+        }
+    });
+}
 
 async function fetchPageContent(url) {
     try {
@@ -61,14 +83,23 @@ async function fetchAndConcatenateContent() {
             const content = await fetchPageContent(link);
             if (content) {
                 allContent += content + '\n\n';  // Separate content from different pages with two newlines
-                allContent += '-----------------------------------------------------------------\n\n'; 
+                //allContent += '-----------------------------------------------------------------\n\n'; 
             }
         }
     }
 
     await fs.writeFile(outputFilePath, allContent);
     console.log('Content concatenated and saved to', outputFilePath);
+
+    // Insert content into the MySQL database
+    insertIntoDatabase(allContent);
 }
+
+
+    connection.query('INSERT INTO webcontent (content) VALUES (?)', [allContent], (error, results) => {
+        if (error) throw error;
+        console.log('Content saved to MySQL database!');
+    });
 
 
 async function checkForChanges() {
