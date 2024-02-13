@@ -124,12 +124,12 @@ body {
 }
 
 .chatbox__image--header {
-    margin-right: 10px;
+    margin-right: 5px;
 }
 
 .chatbox__heading--header {
-    padding-bottom: 10%;
-    padding-top: 10%;
+    padding-bottom: 5%;
+    padding-top: 4%;
     font-size: 1.2rem;
     color: white;
 }
